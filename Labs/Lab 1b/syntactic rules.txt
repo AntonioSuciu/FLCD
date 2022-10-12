@@ -1,0 +1,22 @@
+The words - predefined tokens are specified between double quotes (ex: "predefined", "for")
+
+Syntactic rules:
+
+IDdecl = "DECLARE" IDENTIFIER type
+ARRdecl = "DECLARE" array "array" "[" type "]"
+
+type = "integer" | "char" | "float"
+
+(**) repetitive statements
+
+forstmt = "FOR" IDENTIFIER "IN" forcondition
+
+forcondition = "(" expression ":" expression ")"
+
+(**) vezi de aici in jos
+
+expression = expression "+" term | term
+
+term = term "*" factor | factor
+
+factor = "(" expression ")" | IDENTIFIER

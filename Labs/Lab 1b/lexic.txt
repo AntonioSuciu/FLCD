@@ -1,0 +1,42 @@
+a.Special symbols, representing:
+
+- operators + - * / = < <= == >= != += -= *= /= 
+
+- separators [ ] { }  : ; space '' "" 
+
+- reserved words:
+
+    array char const declare do else for if integer of read then var while write
+
+b. Identifiers
+ - a sequence of characters, where
+	- first character is a letter
+	- the next characters may be 0 or more letters or digits, in no particular order
+
+digit = "0" | "1" | ... | "9"
+letter = "a" | "b" | "c" |...| "z" | "A" | "B" | ... | "Z"
+letter 
+identifier = letter | letter {(letter|digit)}
+(**) identifier = letter | letter ( {letter } | {digit} ) ??????????
+
+c. Constants
+	1. Integers:
+integer = [sign] nzd {digit} | "0"
+sign = "+" | "-"
+nzd = "1" | ... | "9"
+
+	2. Characters:
+char = letter | digit
+
+string = "char{string}"
+
+	3. Floats:
+
+float = (integer "." ( "0" | number) ) |  "0" "." number
+
+number = digit {digit}
+
+	4. Array
+
+array = identifier "[" identifier "]"
+
