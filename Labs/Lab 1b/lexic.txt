@@ -1,12 +1,18 @@
+Alphabet:
+a. Uppercase (A-Z) and lowercase (a-z) letters of the English alphabet
+b. Decimal digits (0-9)
+c. Decimal point (.)
+
+
 a.Special symbols, representing:
 
 - operators + - * / = < <= == >= != += -= *= /= 
 
-- separators [ ] { }  : ; space '' "" 
+- separators [ ] { } ( ) : ; space '' "" 
 
 - reserved words:
 
-    array char const declare do else for if integer of read then var while write
+array char const declare do else for if integer main of read then var while write
 
 b. Identifiers
  - a sequence of characters, where
@@ -16,19 +22,26 @@ b. Identifiers
 digit = "0" | "1" | ... | "9"
 letter = "a" | "b" | "c" |...| "z" | "A" | "B" | ... | "Z"
 letter 
-identifier = letter | letter {(letter|digit)}
-(**) identifier = letter | letter ( {letter } | {digit} ) ??????????
+identifier = letter {(letter|digit)}
+
 
 c. Constants
 	1. Integers:
 integer = [sign] nzd {digit} | "0"
 sign = "+" | "-"
 nzd = "1" | ... | "9"
+numconst = nzd {digit} 
 
 	2. Characters:
 char = letter | digit
 
-string = "char{string}"
+charconst = "'" char "'"
+
+string = ``"`` string ``"`` 
+
+(**) i used `` `` to escape the double quote
+
+stringconst = "char{string}"
 
 	3. Floats:
 
@@ -38,5 +51,4 @@ number = digit {digit}
 
 	4. Array
 
-array = identifier "[" identifier "]"
-
+array = identifier "[" identifier "]" | identifier "[" numconst "]"
