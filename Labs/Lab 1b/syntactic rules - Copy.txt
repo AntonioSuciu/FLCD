@@ -1,0 +1,59 @@
+The words - predefined tokens are specified between double quotes (ex: "predefined", "for")
+
+Syntactic rules:
+
+(**) initialization, declaration..
+
+program = "MAIN" cmpdstmt
+
+IDdecl = "DECLARE" IDENTIFIER type
+ARRdecl = "DECLARE" array "array" "[" type "]"
+
+type = "integer" | "char" | "float"
+
+declaration = IDdecl | ARRdecl
+
+
+(**) repetitive & conditional statements
+
+forstmt = "FOR" IDENTIFIER "IN" forcondition cmpdstmt
+
+forcondition = "(" expression ":" expression ")"
+
+whilestmt = "WHILE" condition cmpdstmt
+
+ifstmt = "IF" condition cmpdstmt ["ELSE" cmpdstmt]
+
+condition = "(" expression relation expression ")"
+
+(**) expression-related
+
+expression = expression "+" term | expression "-" term | term
+
+term = term "*" factor | term "/" factor | factor
+
+factor = "(" expression ")" | IDENTIFIER | integer | float
+
+relation = "<" | "<=" | "==" | ">=" | ">" | "!="
+
+
+(**) general statements
+
+assignstmt = IDENTIFIER "=" (expression | charconst | stringconst ) 
+(**)	   | ARRAY "=" (expression | charconst | stringconst ) 
+
+iostmt  = "READ" "(" identifier ")" | "WRITE" "(" identifier ")" 
+	| "READ" "(" array")" | "WRITE" "(" array ")"
+(**)    | "WRITE" "(" const ")"
+
+cmpdstmt = "{" stmtlist "}"
+
+stmtlist = stmt | stmt ";" stmtlist
+
+stmt = simplestmt | structstmt 
+
+simplstmt = declaration | assignstmt | iostmt
+
+structstmt = cmpdstmt | ifstmt | forstmt | whilestmt
+
+
