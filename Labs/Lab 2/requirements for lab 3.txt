@@ -1,0 +1,9 @@
+symtable:
+add(constant / identifier) -> returns the position, for the PIF
+
+documentation:
+link github prima linie
+hash function
+class diagram (for symtable + ulterior scanner, pif)
+
+1b!!!

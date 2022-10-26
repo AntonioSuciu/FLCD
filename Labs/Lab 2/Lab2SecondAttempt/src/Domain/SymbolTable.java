@@ -1,7 +1,7 @@
 package Domain;
 
 import java.util.ArrayList;
-//import javafx.util.Pair;
+import javafx.util.Pair;
 
 public class SymbolTable {
 
@@ -60,14 +60,33 @@ public class SymbolTable {
 
     }
 
-    public int position(String key)
+//    public int position(String key)
+//    {
+//        int hashval = hashFunction(key);
+//        if(keys.get(hashval).contains(key))
+//        {
+//           return keys.get(hashval).indexOf(key);
+//        }
+//        return -1;
+//    }
+//
+    public Pair<Integer, Integer> position(String key)
     {
         int hashval = hashFunction(key);
         if(keys.get(hashval).contains(key))
         {
-           return keys.get(hashval).indexOf(key);
+            int listPos = 0;
+            for(String el:this.keys.get(hashval)) {
+                if (!el.equals(key))
+                    listPos++;
+                else
+                    break;
+            }
+
+            return new Pair<>(hashval, listPos);
         }
-        return -1;
+        return new Pair<>(-1, -1);
+
     }
 }
 

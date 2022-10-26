@@ -1,4 +1,5 @@
 import Domain.SymbolTable;
+import javafx.util.Pair;
 
 public class Main {
     public static void main(String[] args) {
@@ -8,6 +9,11 @@ public class Main {
         symbolTable.put("123");
         symbolTable.put("456");
 
-        System.out.println(symbolTable.position("123"));
+        Pair<Integer, Integer> positionOf123 = symbolTable.position("123");
+
+        System.out.print("Hashvalue of 123: ");
+        System.out.println(positionOf123.getKey());
+        System.out.print("Position of 123: ");
+        System.out.println(positionOf123.getValue());
     }
 }
