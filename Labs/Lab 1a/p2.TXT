@@ -1,0 +1,24 @@
+DECLARE a integer;
+DECLARE b integer;
+READ(a);
+READ(b);
+DECLARE copy_a integer;
+DECLARE copy_b integer;
+copy_a = a;
+copy_b = b;
+DECLARE gcd integer;
+DECLARE lcm integer;
+WHILE (a != b)
+{
+IF (a > b)
+{
+a = a - b;
+}
+ELSE
+{
+b = b - a;
+}
+}
+gcd = a;
+lcm = copy_a*copy_b / gcd;
+WRITE(lcm);

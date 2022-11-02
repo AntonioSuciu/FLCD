@@ -88,5 +88,22 @@ public class SymbolTable {
         return new Pair<>(-1, -1);
 
     }
+
+    @Override
+    public String toString()
+    {
+        StringBuilder result = new StringBuilder();
+        for (int i=0; i<size; ++i) {
+            result.append(i).append(": [");
+            String separator = "";
+            for(String key: keys.get(i)){
+                result.append(separator);
+                separator = ", ";
+                result.append(key);
+            }
+            result.append("]\n");
+        }
+        return result.toString();
+    }
 }
 

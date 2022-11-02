@@ -1,0 +1,12 @@
+DECLARE 1char char;
+DECLARE char2 char;
+1char = ‘c’;
+char2 = ‘c;
+IF (1char == char2)
+{
+WRITE(‘They are equal’);
+}
+ELSE
+{
+WRITE(‘They are not equal’);
+}

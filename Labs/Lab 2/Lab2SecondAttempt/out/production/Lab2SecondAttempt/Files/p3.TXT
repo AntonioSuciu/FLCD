@@ -1,0 +1,14 @@
+DECLARE n integer;
+READ(n);
+DECLARE arr[n] array[integer];
+FOR i in (0:n)
+{
+READ(arr[i]);
+}
+DECLARE sum integer;
+sum = 0;
+FOR i in (0:n)
+{
+sum += arr[i];
+}
+WRITE(sum);
