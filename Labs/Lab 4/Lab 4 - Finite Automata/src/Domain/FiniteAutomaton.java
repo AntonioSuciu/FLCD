@@ -137,6 +137,8 @@ public class FiniteAutomaton {
     public boolean checkSequence(String seq)
     {
         /// we check if a sequence is accepted by the dfa
+
+        /// if the sequence is epsilon, we check whether the initial state is also a final state
         if(seq.length() == 0)
             return finalStates.contains(initialState);
 
@@ -152,14 +154,11 @@ public class FiniteAutomaton {
                 state = transitions.get(key).iterator().next();
                 // if so, it means that this is our new current state in this iteration
             }
-
             else
             {
                 return false;
                 /// if we don't find any mapping => not accepted by the dfa
             }
-
-
             /// if we find the mapping => accepted by the dfa
         }
         return finalStates.contains(state);
