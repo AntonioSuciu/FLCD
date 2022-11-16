@@ -1,5 +1,5 @@
 DECLARE a integer;
-DECLARE b integer;
+DECLARE a integer;
 READ(a);
 READ(b);
 WHILE (a != b)
