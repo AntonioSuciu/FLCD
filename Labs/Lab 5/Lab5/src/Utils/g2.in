@@ -1,0 +1,27 @@
+N = { program cmpdstmt IDdecl type ARRdecl declaration forstmt forcondition whilestmt simpleifstmt ifelsestmt ifstmt condition relation expression assignstmt iostmt stmtlist simplestmt structstmt}
+Sigma = { MAIN DECLARE IDENTIFIER ARRAY [ ] INTEGER CHAR FLOAT FOR IN : ( ) WHILE IF ELSE + - * / < > ! = { } READ WRITE }
+S = program
+P = {
+program -> MAIN cmpdstmt
+IDdecl -> DECLARE IDENTIFIER type
+ARRdecl -> DECLARE arrray ARRAY [ type ]
+type -> INTEGER | CHAR | FLOAT
+declaration -> IDdecl | ARRdecl
+forstmt -> FOR IDENTIFIER IN forcondition cmpdstmt
+forcondition -> ( expression : expression )
+whilestmt -> WHILE condition cmpdstmt
+simpleifstmt -> IF condition CMPDSTMT
+ifelsestmt -> IF condition CMPDSTMT ELSE cmpdstmt
+ifstmt -> simpleifstmt | ifelsestmt
+condition -> ( expression relation expression )
+expression -> expression + term | expression - term | term
+term -> term * factor | term / factor | factor
+factor -> ( expression ) | IDENTIFIER | integer | float
+relation -> < | <= | == | >= | > | !=
+assignstmt -> IDENTIFIER = expression
+iostmt -> READ ( IDENTIFIER ) | WRITE ( IDENTIFIER )
+cmpdstmt -> { stmtlist }
+stmtlist -> simplestmt | structstmt
+simplestmt -> declaration | assignstmt | iostmt
+structstmt -> cmpdstmt | ifstmt | forstmt | whilestmt
+}
