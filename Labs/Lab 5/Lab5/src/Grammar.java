@@ -235,4 +235,28 @@ public class Grammar
         return true;
     }
 
+    public Set<String> getN() {
+        return N;
+    }
+
+    public Set<String> getSigma() {
+        return Sigma;
+    }
+
+    public HashMap<Set<String>, Set<List<String>>> getP() {
+        return P;
+    }
+
+    public String getS() {
+        return S;
+    }
+
+    public Set<List<String>> getProductionForNonterminal(String nonTerminal) {
+        for (Set<String> lhs : P.keySet()) {
+            if (lhs.contains(nonTerminal)) {
+                return P.get(lhs);
+            }
+        }
+        return new HashSet<>();
+    }
 }
