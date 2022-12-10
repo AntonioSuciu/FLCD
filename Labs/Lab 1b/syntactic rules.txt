@@ -57,3 +57,13 @@ simplstmt = declaration | assignstmt | iostmt
 structstmt = cmpdstmt | ifstmt | forstmt | whilestmt
 
 
+
+(**) expr replacement:
+E -> BA
+A -> +BA
+A -> epsilon
+B -> DC
+C -> *DC
+C -> epsilon
+D -> (S)
+D -> IDENTIFIER

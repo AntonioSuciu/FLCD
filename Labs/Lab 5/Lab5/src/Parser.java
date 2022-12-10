@@ -23,6 +23,46 @@ public class Parser
         generateParseTable();
     }
 
+
+    private Set<String> concatSizeOne(List<String> nonTerminals) {
+        if(nonTerminals.size() == 0)
+        {
+            return new HashSet<>();
+        }
+        /// we return an empty set
+
+        if(nonTerminals.size() == 1)
+        {
+            return firstSet.get(nonTerminals.iterator().next());
+        }
+        /// size == 1 => we return what is after the nonterminal
+
+        Set<String> concatenation = new HashSet<>();
+        int step = 0;
+
+        while (step < nonTerminals.size())
+        {
+            boolean thereIsEpsilon = false;
+            for(String s: firstSet.get(nonTerminals.get(step)))
+            {
+                if(s.equals("epsilon"))
+                {
+                    /// if we have an epsilon, we need to get further
+                    thereIsEpsilon = true;
+                }
+                else {
+                    /// otherwise, we add the symbol to the concatenation
+                    concatenation.add(s);
+                }
+            }
+            if(thereIsEpsilon)
+                step++;
+            else
+                break;
+        }
+        return concatenation;
+    }
+
     public void generateFirst()
     {
         // we initialize
@@ -72,12 +112,12 @@ public class Parser
                         }
                         else
                         {
-                            rhsTerminal = symbol;
+//                            rhsTerminal = symbol;
                             /// if it is a non-terminal => it is a terminal => we stop
                             break;
                         }
                         /// we perform the concatenation of size one
-                    toAdd.addAll(concatSizeOne(rhsNonTerminals, rhsTerminal));
+                    toAdd.addAll(concatSizeOne(rhsNonTerminals));
                 }
 
                 if(!toAdd.equals(firstSet.get(nonterminal)))
@@ -90,44 +130,6 @@ public class Parser
         }
     }
 
-    private Set<String> concatSizeOne(List<String> nonTerminals, String terminal) {
-        if(nonTerminals.size() == 0)
-        {
-            return new HashSet<>();
-        }
-        /// we return an empty set
-
-        if(nonTerminals.size() == 1)
-        {
-            return firstSet.get(nonTerminals.iterator().next());
-        }
-        /// size == 1 => we return what is after the nonterminal
-
-        Set<String> concatenation = new HashSet<>();
-        int step = 0;
-
-        while (step < nonTerminals.size())
-        {
-            boolean thereIsEpsilon = false;
-            for(String s: firstSet.get(nonTerminals.get(step)))
-            {
-                if(s.equals("epsilon"))
-                {
-                    /// if we have an epsilon, we need to get further
-                    thereIsEpsilon = true;
-                }
-                else {
-                    /// otherwise, we add the symbol to the concatenation
-                    concatenation.add(s);
-                }
-            }
-            if(thereIsEpsilon)
-                step++;
-            else
-                break;
-        }
-        return concatenation;
-    }
 
     public void generateFollow()
     {
@@ -146,37 +148,58 @@ public class Parser
         while(isChanged)
         {
             isChanged = false;
-            HashMap<String, Set<String>> newColumn = new HashMap<>();
+            HashMap<String, Set<String>> buffer = new HashMap<>();
 
             for(String nonterminal : grammar.getN())
             {
-                newColumn.put(nonterminal, new HashSet<>());
+                /// we add in a buffer each nonterminal with each corresponding follow elements
+                buffer.put(nonterminal, new HashSet<>());
+
+                /// we build up the mapping between the productions and
                 var productionsWithNonterminalInRhs = new HashMap<String, Set<List<String>>>();
+
+
                 var allProductions = grammar.getP();
                 allProductions.forEach((k, v) -> {
+                    /// for each production in the set
                     for (var eachProduction : v) {
+                        /// if it contains the nonterminal
                         if (eachProduction.contains(nonterminal)) {
                             var key = k.iterator().next();
+                            /// we store the LHS of the production
                             if (!productionsWithNonterminalInRhs.containsKey(key))
+
+                                // and if it's not already added
                                 productionsWithNonterminalInRhs.put(key, new HashSet<>());
+                            /// we add the LHS -> ProdWithNonTRHS thingy
                             productionsWithNonterminalInRhs.get(key).add(eachProduction);
                         }
                     }
                 });
+
+                ///the follow set of the current nonterminal that is to be added to the buffer
                 var toAdd = new HashSet<>(followSet.get(nonterminal));
                 productionsWithNonterminalInRhs.forEach((k, v) -> {
                     for (var production : v) {
+                        ///for each production
                         var productionList = (ArrayList<String>) production;
-                        for (var indexOfNonterminal = 0; indexOfNonterminal < productionList.size(); ++indexOfNonterminal)
+                        System.out.println(productionList);
+                        for (var indexOfNonterminal = 0; indexOfNonterminal < productionList.size(); indexOfNonterminal++)
+                            /// if we find the nonterminal in the production lists and
                             if (productionList.get(indexOfNonterminal).equals(nonterminal)) {
                                 if (indexOfNonterminal + 1 == productionList.size()) {
+                                    /// keeps it in order to add it to look further for the follow (being the last terminal, nothing follows)
                                     toAdd.addAll(followSet.get(k));
                                 } else {
+                                    /// otherwise we get the next symbol
                                     var followSymbol = productionList.get(indexOfNonterminal + 1);
                                     if (grammar.getSigma().contains(followSymbol))
+                                        /// and if it is part of the alphabet, it will be added
                                         toAdd.add(followSymbol);
                                     else {
+                                        /// if it is not part of the alphabet, we move on
                                         for (var symbol : firstSet.get(followSymbol)) {
+                                            /// if it is epsilon, we add the follow of the lhs
                                             if (symbol.equals("epsilon"))
                                                 toAdd.addAll(followSet.get(k));
                                             else
@@ -190,12 +213,14 @@ public class Parser
                 if (!toAdd.equals(followSet.get(nonterminal))) {
                     isChanged = true;
                 }
-                newColumn.put(nonterminal, toAdd);
+                buffer.put(nonterminal, toAdd);
             }
 
-            followSet = newColumn;
+            followSet = buffer;
         }
     }
+
+
     public void generateParseTable() {
 
         // we initialize the parse table
@@ -245,7 +270,7 @@ public class Parser
                         parseTable.put(new Pair<>(key, firstSymbol), new Pair<>(String.join(" ", production),productionsRHS.indexOf(production)+1));
                     else {
                         try {
-                            throw new IllegalAccessException("CONFLICT: Pair "+key+","+firstSymbol);
+                            throw new IllegalAccessException("There is a conflict: Pair "+key+","+firstSymbol);
                         } catch (IllegalAccessException e) {
                             e.printStackTrace();
                         }
@@ -257,7 +282,7 @@ public class Parser
                                 parseTable.put(new Pair<>(key, symbol), new Pair<>(String.join(" ", production),productionsRHS.indexOf(production)+1));
                             else {
                                 try {
-                                    throw new IllegalAccessException("There is a conflixt: pair " + key + ", " +firstSymbol);
+                                    throw new IllegalAccessException("There is a conflict: pair " + key + ", " +firstSymbol);
                                 } catch (IllegalAccessException e) {
                                     e.printStackTrace();
                                 }
