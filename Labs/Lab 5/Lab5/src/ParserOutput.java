@@ -29,7 +29,7 @@ public class ParserOutput {
 
         Stack<Node> nodeStack = new Stack<>();
         var productionsIndex = 0;
-        //root
+        //root + initialization
         Node node = new Node();
         node.setParent(0);
         node.setSibling(0);
@@ -41,8 +41,9 @@ public class ParserOutput {
         nodeList.add(node);
         this.root = node;
 
+
         while(productionsIndex < productions.size() && !nodeStack.isEmpty()){
-            Node currentNode = nodeStack.peek(); //father
+            Node currentNode = nodeStack.peek(); //the father
             if(parser.getGrammar().getSigma().contains(currentNode.getValue()) || currentNode.getValue().contains("epsilon")){
                 while(nodeStack.size()>0 && !nodeStack.peek().getHasRight()) {
                     nodeStack.pop();
@@ -54,7 +55,7 @@ public class ParserOutput {
                 continue;
             }
 
-            //children
+            // the children
             var production = parser.getProductionByOrderNumber(productions.get(productionsIndex));
             nodeNumber+=production.size()-1;
             for(var i=production.size()-1;i>=0;--i){

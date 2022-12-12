@@ -1,0 +1,8 @@
+N = { S A B T }
+Sigma = { a b c }
+S = S
+P = {
+S -> a S T | c
+T -> b S | a
+A -> Bc
+}

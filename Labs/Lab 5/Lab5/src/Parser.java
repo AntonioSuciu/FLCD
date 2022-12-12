@@ -183,7 +183,7 @@ public class Parser
                     for (var production : v) {
                         ///for each production
                         var productionList = (ArrayList<String>) production;
-                        System.out.println(productionList);
+//                        System.out.println(productionList);
                         for (var indexOfNonterminal = 0; indexOfNonterminal < productionList.size(); indexOfNonterminal++)
                             /// if we find the nonterminal in the production lists and
                             if (productionList.get(indexOfNonterminal).equals(nonterminal)) {
@@ -255,7 +255,7 @@ public class Parser
                 }
         });
 
-        System.out.println(productionsRHS);
+//        System.out.println(productionsRHS);
 
         /// for each production
         productions.forEach((k, v) -> {
@@ -267,14 +267,17 @@ public class Parser
                 /// if it is in the alphabet
                 if (grammar.getSigma().contains(firstSymbol))
                     if (parseTable.get(new Pair<>(key, firstSymbol)).getFirst().equals("err"))
+                        // if it is still "err" (like in the beginning), we add the production and its index
                         parseTable.put(new Pair<>(key, firstSymbol), new Pair<>(String.join(" ", production),productionsRHS.indexOf(production)+1));
                     else {
                         try {
+                            /// we have a conflict
                             throw new IllegalAccessException("There is a conflict: Pair "+key+","+firstSymbol);
                         } catch (IllegalAccessException e) {
                             e.printStackTrace();
                         }
                     }
+                    ///else, if it is in the set of nonterminals
                 else if (grammar.getN().contains(firstSymbol)) {
                     if (production.size() == 1)
                         for (var symbol : firstSet.get(firstSymbol))
@@ -398,6 +401,7 @@ public class Parser
         workingStack.push(grammar.getS());
 
         while(!(inputStack.peek().equals("$") && workingStack.peek().equals("$")))
+        /// while there's still something in the stacks, we process them
         {
             String inputStackPeek = inputStack.peek();
             String workingStackPeek = workingStack.peek();

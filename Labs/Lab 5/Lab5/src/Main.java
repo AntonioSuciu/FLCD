@@ -25,18 +25,27 @@ public class Main {
     {
 
 
-
-        Grammar grammar = new Grammar("src/Utils/g2.in");
-//        System.out.println(grammar.printProductions());
-        Parser parser = new Parser(grammar);
-        System.out.println(parser.printFirst());
+//
+        Grammar grammar = new Grammar("src/Utils/g2_corrected.in");
+////        System.out.println(grammar.printProductions());
+//        Parser parser = new Parser(grammar);
+//        System.out.println(parser.printFirst());
 //        System.out.println(parser.printFollow());
 //        var sigma = grammar.getSigma();
 //        System.out.println(sigma);
 //        System.out.println(parser.printParseTable());
 //        List<String> sequence = readSequence("src/Utils/seq.in");
 //        System.out.println(parser.analyseSequence(sequence));
-//        ParserOutput parserOutput = new ParserOutput(parser,sequence,"src/Utils/output.in");
-//        parserOutput.printTree();
+
+
+        Parser parser = new Parser(grammar);
+//        System.out.println(parser.printFirst());
+//        System.out.println(parser.printFollow());
+//        System.out.println(parser.printParseTable());
+//        List<String> sequence = List.of("(","int",")","+","int");
+        List<String> sequence = readSequence("src/Utils/seq.in");
+        System.out.println(parser.analyseSequence(sequence));
+        ParserOutput parserOutput = new ParserOutput(parser,sequence,"src/Utils/output.in");
+        parserOutput.printTree();
     }
 }
