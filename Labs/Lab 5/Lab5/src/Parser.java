@@ -25,43 +25,47 @@ public class Parser
 
 
     private Set<String> concatSizeOne(List<String> nonTerminals) {
+        /// Return an empty set if the input list is empty
         if(nonTerminals.size() == 0)
         {
             return new HashSet<>();
         }
-        /// we return an empty set
-
+        /// Return the first set of the single non-terminal in the list if the input list has size 1
         if(nonTerminals.size() == 1)
         {
             return firstSet.get(nonTerminals.iterator().next());
         }
-        /// size == 1 => we return what is after the nonterminal
-
+        /// Otherwise, concatenate the first sets of the non-terminals in the list
         Set<String> concatenation = new HashSet<>();
         int step = 0;
 
         while (step < nonTerminals.size())
         {
             boolean thereIsEpsilon = false;
+            /// Iterate over the terminal symbols in the first set of the current non-terminal
             for(String s: firstSet.get(nonTerminals.get(step)))
             {
+                /// If an epsilon is encountered, set a flag and continue to the next symbol
                 if(s.equals("epsilon"))
                 {
-                    /// if we have an epsilon, we need to get further
                     thereIsEpsilon = true;
                 }
+                /// Otherwise, add the symbol to the concatenated set
                 else {
-                    /// otherwise, we add the symbol to the concatenation
                     concatenation.add(s);
                 }
             }
+            /// If an epsilon was encountered, move on to the next non-terminal
             if(thereIsEpsilon)
                 step++;
+                /// If no epsilon was encountered, break out of the loop
             else
                 break;
         }
+        /// Return the concatenated set
         return concatenation;
     }
+
 
     public void generateFirst()
     {
@@ -223,26 +227,33 @@ public class Parser
 
     public void generateParseTable() {
 
-        // we initialize the parse table
+        // we initialize the parse table with rows for each non-terminal and terminal symbol in the grammar,
+        // and columns for each terminal symbol and the end-of-input symbol "$".
+        // we set the default value for each cell in the table to "err" and -1.
         List<String> rows = new ArrayList<>();
         rows.addAll(grammar.getN());
         rows.addAll(grammar.getSigma());
         rows.add("$");
+        // add end-of-input symbol as a row
 
         List<String> columns = new ArrayList<>();
         columns.addAll(grammar.getSigma());
         columns.add("$");
+        // add end-of-input symbol as a column
+
+
 
         for (var row : rows)
             for (var col : columns)
                 parseTable.put(new Pair<String, String>(row, col), new Pair<String, Integer>("err",-1));
 
+        // Set the value of the cell in the parse table corresponding to an input symbol and stack symbol match to "pop" and -1.
         for (var col : columns)
             parseTable.put(new Pair<String, String>(col, col), new Pair<String, Integer>("pop",-1));
 
         parseTable.put(new Pair<String, String>("$", "$"), new Pair<String, Integer>("acc",-1));
 
-        /// get the right hand side of every production
+        /// get the right hand side of every production and add it to a list, excluding epsilon productions.
         var productions = grammar.getP();
         this.productionsRHS = new ArrayList<>();
         productions.forEach((k,v) -> {
@@ -262,42 +273,56 @@ public class Parser
             var key = k.iterator().next();
 
             for (var production : v) {
-                /// we get the first symbol
+                /// we get the first symbol of the right-hand side of the production.
                 var firstSymbol = production.get(0);
-                /// if it is in the alphabet
+                /// if the first symbol is a terminal symbol, add the production to the corresponding cell in the parse table.
                 if (grammar.getSigma().contains(firstSymbol))
                     if (parseTable.get(new Pair<>(key, firstSymbol)).getFirst().equals("err"))
-                        // if it is still "err" (like in the beginning), we add the production and its index
+                        // if it is still "err" (like in the beginning), we add the production and its index to the cell
                         parseTable.put(new Pair<>(key, firstSymbol), new Pair<>(String.join(" ", production),productionsRHS.indexOf(production)+1));
                     else {
                         try {
-                            /// we have a conflict
+                            /// we have a conflict: there are multiple productions
+                            // that could be applied to the same input symbol and stack symbol.
                             throw new IllegalAccessException("There is a conflict: Pair "+key+","+firstSymbol);
                         } catch (IllegalAccessException e) {
                             e.printStackTrace();
                         }
                     }
-                    ///else, if it is in the set of nonterminals
+                    ///else, if it is in the set of nonterminals,  determine the first set for that non-terminal
+                    // and add the production to the corresponding cells in the parse table.
                 else if (grammar.getN().contains(firstSymbol)) {
                     if (production.size() == 1)
+                        // handle case of epsilon production
                         for (var symbol : firstSet.get(firstSymbol))
                             if (parseTable.get(new Pair<>(key, symbol)).getFirst().equals("err"))
+                                // If the cell is still "err" (like in the beginning), add the production and its index to the cell.
                                 parseTable.put(new Pair<>(key, symbol), new Pair<>(String.join(" ", production),productionsRHS.indexOf(production)+1));
                             else {
                                 try {
+                                    // There is a conflict: there are multiple productions that could be applied to the same input symbol and stack symbol.
                                     throw new IllegalAccessException("There is a conflict: pair " + key + ", " +firstSymbol);
                                 } catch (IllegalAccessException e) {
                                     e.printStackTrace();
                                 }
                             }
                     else {
+                        // Handle case where first symbol is a non-terminal,
+                        // but the production is not an epsilon production.
                         var i = 1;
                         var nextSymbol = production.get(1);
                         var firstSetForProduction = firstSet.get(firstSymbol);
 
+                        // Determine the first set for the production
+                        // by combining the first sets of the symbols
+                        // in the production until we reach a terminal symbol
+                        // or the end of the production.
                         while (i < production.size() && grammar.getN().contains(nextSymbol)) {
                             var firstForNext = firstSet.get(nextSymbol);
                             if (firstSetForProduction.contains("epsilon")) {
+                                // If the first set of the first symbol in the production includes epsilon,
+                                // remove epsilon and
+                                // add the first set of the next symbol to the first set of the production.
                                 firstSetForProduction.remove("epsilon");
                                 firstSetForProduction.addAll(firstForNext);
                             }
@@ -306,14 +331,19 @@ public class Parser
                             if (i < production.size())
                                 nextSymbol = production.get(i);
                         }
-
+                        // Add the production to the cells in the parse table
+                        // corresponding to the first set of the production.
                         for (var symbol : firstSetForProduction) {
                             if (symbol.equals("epsilon"))
                                 symbol = "$";
                             if (parseTable.get(new Pair<>(key, symbol)).getFirst().equals("err"))
+                                // If the cell is still "err" (like in the beginning),
+                                // add the production and its index to the cell
                                 parseTable.put(new Pair<>(key, symbol), new Pair<>(String.join(" ", production), productionsRHS.indexOf(production) + 1));
                             else {
                                 try {
+                                    // There is a conflict: there are multiple productions that could be applied
+                                    // to the same input symbol and stack symbol.
                                     throw new IllegalAccessException("There is a conflict: pair " + key + ", " +firstSymbol);
                                 } catch (IllegalAccessException e) {
                                     e.printStackTrace();
@@ -322,15 +352,23 @@ public class Parser
                         }
                     }
                 } else {
+                    // If the first symbol of the production is
+                    // a non-terminal and the production is an epsilon production,
+                    // add the production to the cells in the parse table
+                    // corresponding to the follow set of the non-terminal.
                     var follow = followSet.get(key);
                     for (var symbol : follow) {
                         if (symbol.equals("epsilon")) {
+                            // Handle special case where follow set includes epsilon.
                             if (parseTable.get(new Pair<>(key, "$")).getFirst().equals("err")) {
+                                // If the cell is still "err" (like in the beginning), add the production and its index to the cell.
                                 var prod = new ArrayList<>(List.of("epsilon",key));
                                 parseTable.put(new Pair<>(key, "$"), new Pair<>("epsilon", productionsRHS.indexOf(prod) + 1));
                             }
                             else {
                                 try {
+                                    // There is a conflict: there are multiple productions that could be applied
+                                    // to the same input symbol and stack symbol.
                                     throw new IllegalAccessException("There is a conflict: pair " + key + ", " +firstSymbol);
                                 } catch (IllegalAccessException e) {
                                     e.printStackTrace();
@@ -342,6 +380,8 @@ public class Parser
                         }
                         else {
                             try {
+                                // There is a conflict: there are multiple productions that could be applied
+                                // to the same input symbol and stack symbol.
                                 throw new IllegalAccessException("There is a conflixt: pair " + key + ", " +firstSymbol);
                             } catch (IllegalAccessException e) {
                                 e.printStackTrace();
@@ -403,11 +443,16 @@ public class Parser
         while(!(inputStack.peek().equals("$") && workingStack.peek().equals("$")))
         /// while there's still something in the stacks, we process them
         {
+            // Get the top symbols of the input stack and the working stack.
             String inputStackPeek = inputStack.peek();
             String workingStackPeek = workingStack.peek();
+
+            // Look up the production to use in the parse table using
+            // the top symbols of the input stack and working stack as the key.
             Pair<String,String> key = new Pair<>(workingStackPeek, inputStackPeek);
             Pair<String,Integer> value = parseTable.get(key);
 
+            // If the value in the parse table is not "err", proceed with the parse.
             if(!value.getFirst().equals("err")){
                 if(value.getFirst().equals("pop")){
                     inputStack.pop();

@@ -1,9 +1,11 @@
-N = { S A B C }
-E = { ( ) + * int }
+N = { S B C D E F }
+Sigma = { a b c f g h epsilon }
 S = S
 P = {
-    S -> A B
-    A -> ( S ) | int C
-    B -> + S | epsilon
-    C -> * A | epsilon
+S -> a B D h
+B -> c C
+C -> b C | epsilon
+D -> E F
+E -> g | epsilon
+F -> f | epsilon
 }

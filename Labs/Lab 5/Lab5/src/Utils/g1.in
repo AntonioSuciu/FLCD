@@ -1,7 +1,7 @@
-N = { S A B }
+N = { S A }
 Sigma = { a b c }
 S = S
 P = {
 S -> a S b S | a S a | c
-A -> Bc
+A -> b c
 }
