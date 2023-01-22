@@ -24,25 +24,25 @@ public class Main {
     public static void main(String[] args)
     {
 
-
-        Grammar grammar = new Grammar("src/Utils/g1.in");
-        Parser parser = new Parser(grammar);
+//
+//        Grammar grammar = new Grammar("src/Utils/g1.in");
+//        Parser parser = new Parser(grammar);
 
 
 
 //        Grammar grammar = new Grammar("src/Utils/g1_corrected.in");
 //        Parser parser = new Parser(grammar);
 
-//        Grammar grammar = new Grammar("src/Utils/g4.in");
-//        System.out.println(grammar.printProductions());
-//        Parser parser = new Parser(grammar);
-////        System.out.println(parser.printFirst());
-////        System.out.println(parser.printFollow());
-//        System.out.println(parser.printParseTable());
-//        List<String> sequence = readSequence("src/Utils/seq4.in");
-//        System.out.println(parser.analyseSequence(sequence));
-//        ParserOutput parserOutput = new ParserOutput(parser,sequence,"src/Utils/output.in");
-//        parserOutput.printTree();
+        Grammar grammar = new Grammar("src/Utils/g4.in");
+        System.out.println(grammar.printProductions());
+        Parser parser = new Parser(grammar);
+//        System.out.println(parser.printFirst());
+//        System.out.println(parser.printFollow());
+        System.out.println(parser.printParseTable());
+        List<String> sequence = readSequence("src/Utils/seq4.in");
+        System.out.println(parser.analyseSequence(sequence));
+        ParserOutput parserOutput = new ParserOutput(parser,sequence,"src/Utils/output.in");
+        parserOutput.printTree();
 
 
 
