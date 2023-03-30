@@ -1,0 +1,16 @@
+DECLARE a integer;
+DECLARE b integer;
+READ(a);
+READ(b);
+WHILE (a != b)
+{
+IF (a > b)
+{
+a = a - b;
+}
+ELSE
+{
+b = b - a;
+}
+}
+WRITE(a);
